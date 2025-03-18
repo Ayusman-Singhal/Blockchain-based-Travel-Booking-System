@@ -37,11 +37,11 @@ Our vision is to revolutionize the travel industry by eliminating intermediaries
 
 ```
 travel_booking/
-├── sources/             # Move source code
-│   ├── project.move     # Flight management module
-│   ├── project01.move   # Accommodation management module
-│   └── project03.move   # Main travel booking module
-└── Move.toml            # Project configuration
+├── sources/             
+│   ├── project.move     
+│   ├── project01.move   
+│   └── project03.move   
+└── Move.toml            
 ```
 ## Contract Address:
 ```
