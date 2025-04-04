@@ -1,50 +1,63 @@
-## Project Title
-Travel Booking System
+# Student Crowdfunding Platform
 
 ## Project Description
-A decentralized travel booking platform built on the Aptos blockchain using the Move programming language. This smart contract system enables secure and transparent management of travel accommodations and flights without intermediaries.
+A decentralized student crowdfunding platform built on the Aptos blockchain using the Move programming language. This smart contract system enables students to raise funds for their educational expenses through transparent and trustless cryptocurrency transactions.
 
 ## Project Vision
-Our vision is to revolutionize the travel industry by eliminating intermediaries and reducing costs through blockchain technology. By providing a trustless platform for travel services, we aim to create a more efficient, transparent, and accessible travel booking experience for everyone.
+The **Student Crowdfunding Platform** aims to provide a decentralized way for students to raise funds for their educational expenses. Built on the Aptos blockchain, the platform allows students to create crowdfunding campaigns and receive contributions in cryptocurrency, ensuring secure and transparent transactions.
 
 ## Future Scope
-- **Multi-chain Integration**: Expand to other blockchain networks to increase accessibility
-- **Payment Options**: Integrate multiple cryptocurrency payment methods
-- **Travel Packages**: Combine flights and accommodations into discounted packages
-- **Loyalty Program**: Implement a token-based reward system for frequent travelers
-- **Travel Insurance**: Smart contract-based travel insurance options
-- **Mobile Application**: Develop a mobile interface for convenient booking
-- **Reviews and Ratings**: Add decentralized review system for accommodations and flights
+- **Multiple Campaign Support**: Allow students to create and manage multiple campaigns simultaneously
+- **Campaign Categories**: Add educational purpose categories (tuition, books, housing, research)
+- **Milestone-Based Funding**: Implement milestone releases of funds as educational goals are met
+- **Donor Recognition**: Create a system to recognize and reward frequent contributors
+- **Educational Institution Verification**: Partner with universities to verify student status
+- **Campaign Updates**: Enable campaign owners to post updates about their educational journey
+- **Mobile Application**: Develop a dedicated mobile interface for the platform
+- **Cross-Chain Integration**: Expand to other blockchain networks for wider accessibility
 
 ## Key Features
-- **Flight Management**
-  - Create flight listings with details (departure/arrival cities, times, pricing)
-  - Book available flights with transparent capacity tracking
-  - Secure immutable flight records on blockchain
+- **Campaign Creation**
+  - Students can create new crowdfunding campaigns by specifying their funding goals
+  - Campaign details stored securely on the Aptos blockchain
+  - Automatic campaign status management
+  
+- **Contribution System**
+  - Direct contribution to campaigns using Aptos Coin (APT)
+  - Transparent tracking of raised amounts
+  - Secure blockchain-based transactions
 
-- **Accommodation Management**
-  - List accommodations with complete details
-  - Book available rooms with automatic availability updates
-  - Transparent pricing and capacity management
+- **Campaign Management**
+  - Real-time campaign information retrieval
+  - Automatic deactivation when funding goal is reached
+  - Transparent fund allocation to students
 
 - **Blockchain Benefits**
-  - No intermediary fees
-  - Immutable booking records
-  - Transparent transactions
-  - Trustless operations
+  - No intermediary fees or payment processors
+  - Immutable campaign and contribution records
+  - Trustless financial transactions
+  - Global accessibility for students and contributors
 
 ## Project Structure
+```
+crowdfunding/
+├── src/                      # Frontend React application
+│   ├── utils/                # Utility functions
+│   │   └── aptosClient.js    # Aptos blockchain integration
+│   │
+│   ├── App.js                # Main application component
+│   └── App.css               # Application styling
+├── sources/                 # Smart contract
+│   └── project.move     # Move language contract
+├── public/                   # Static assets
+│   └── index.html            # HTML entry point
+├── Move.toml                 # Move package configuration
+└── README.md                 # Project documentation
+```
 
+## Contract Address
 ```
-travel_booking/
-├── sources/             
-│   ├── project.move     
-│   ├── project01.move   
-│   └── project03.move   
-└── Move.toml            
+0x24e73c3d61e272550e682aa2543966a4057e3403e7aed4445bf9975855c936a1
 ```
-## Contract Address:
-```
-0xb6f30fb48c6ecce66c5e3b67a605190c734016d1969bf9bade266e5f73933f49
-```
-![image](https://github.com/user-attachments/assets/a5580800-1157-4f61-a951-662dd5fec39d)
+
+![Student Crowdfunding Platform](https://github.com/user-attachments/assets/40bf88e6-94c5-47af-adf6-46a70036a609)
