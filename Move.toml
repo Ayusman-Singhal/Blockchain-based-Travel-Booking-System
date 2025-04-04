@@ -1,14 +1,15 @@
 [package]
-name = "travel_booking"
+name = "Crowdfunding"
 version = "1.0.0"
 authors = []
 
 [addresses]
-travel_booking = "0x3671792f8f385c96010cae32534b803cd3a5d69f1c888d20a2880a9a1357113"
-
+Crowdfunding = "_"
 [dev-addresses]
 
-[dependencies]
-AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework", rev = "main" }
+[dependencies.AptosFramework]
+git = "https://github.com/aptos-labs/aptos-core.git"
+rev = "mainnet"
+subdir = "aptos-move/framework/aptos-framework"
 
 [dev-dependencies]
