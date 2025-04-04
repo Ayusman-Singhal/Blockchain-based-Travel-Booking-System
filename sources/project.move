@@ -1,129 +1,73 @@
-module travel_booking::flights {
-    use std::signer;
-    use std::string::String;
-    use aptos_framework::account;
-    use aptos_framework::event;
-    use aptos_framework::timestamp;
+module Crowdfunding::Crowdfunding {
+    //use aptos_framework::coin::{self, Coin};
+    use aptos_framework::aptos_coin::AptosCoin;
+    use aptos_framework::signer;
+    use aptos_framework::coin;
+    use std::vector;
 
-    /// Errors
-    const EINVALID_FLIGHT_ID: u64 = 1;
-    const EINVALID_PRICE: u64 = 2;
-    const EINVALID_CAPACITY: u64 = 3;
-    const EINVALID_DEPARTURE_TIME: u64 = 4;
-    const EINSUFFICIENT_CAPACITY: u64 = 5;
-    const EINVALID_OPERATOR: u64 = 6;
-
-    /// Structs
-    struct Flight has key, copy {
-        id: u64,
-        operator: address,
-        departure_city: String,
-        arrival_city: String,
-        departure_time: u64,
-        price: u64,
-        capacity: u64,
-        booked_seats: u64,
+    /// A campaign with a goal, current amount raised, and an active status
+    struct Campaign has store, key {
+        goal_amount: u64,
+        current_amount: u64,
+        active: bool,
     }
 
-    struct FlightEvents has key {
-        flight_created_events: event::EventHandle<FlightCreatedEvent>,
-        flight_booked_events: event::EventHandle<FlightBookedEvent>,
+    /// Resource that holds all campaigns
+    struct Campaigns has key {
+        campaigns: vector<Campaign>,
     }
 
-    struct FlightCreatedEvent has drop, store {
-        flight_id: u64,
-        operator: address,
-        departure_city: String,
-        arrival_city: String,
-        departure_time: u64,
-        price: u64,
-        capacity: u64,
-    }
+    /// Initialize a campaign for an account
+    public entry fun create_campaign(account: &signer, goal_amount: u64) acquires Campaigns {
+        let addr = signer::address_of(account);
+        
+        // If Campaigns resource doesn't exist for the account, create it
+        if (!exists<Campaigns>(addr)) {
+            move_to(account, Campaigns {
+                campaigns: vector::empty<Campaign>(),
+            });
+        };
 
-    struct FlightBookedEvent has drop, store {
-        flight_id: u64,
-        passenger: address,
-        seats: u64,
-    }
-
-    /// Functions
-    public fun initialize(account: &signer) {
-        move_to(account, FlightEvents {
-            flight_created_events: account::new_event_handle<FlightCreatedEvent>(account),
-            flight_booked_events: account::new_event_handle<FlightBookedEvent>(account),
+        // Add a new campaign to the account
+        let campaigns = borrow_global_mut<Campaigns>(addr);
+        vector::push_back(&mut campaigns.campaigns, Campaign {
+            goal_amount,
+            current_amount: 0,
+            active: true,
         });
     }
 
-    public entry fun create_flight(
-        operator: &signer,
-        departure_city: String,
-        arrival_city: String,
-        departure_time: u64,
-        price: u64,
-        capacity: u64,
-    ) acquires FlightEvents {
-        let operator_addr = signer::address_of(operator);
-        let flight_id = timestamp::now_microseconds();
-        
-        assert!(price > 0, EINVALID_PRICE);
-        assert!(capacity > 0, EINVALID_CAPACITY);
-        assert!(departure_time > timestamp::now_seconds(), EINVALID_DEPARTURE_TIME);
-
-        let flight = Flight {
-            id: flight_id,
-            operator: operator_addr,
-            departure_city,
-            arrival_city,
-            departure_time,
-            price,
-            capacity,
-            booked_seats: 0,
+    /// View details of the first campaign of an account
+    public fun view_campaign(addr: address): (u64, u64, bool) acquires Campaigns {
+        if (!exists<Campaigns>(addr)) {
+            return (0, 0, false); // No campaign found
         };
 
-        move_to(operator, flight);
-
-        let events = borrow_global_mut<FlightEvents>(@travel_booking);
-        event::emit_event(
-            &mut events.flight_created_events,
-            FlightCreatedEvent {
-                flight_id,
-                operator: operator_addr,
-                departure_city,
-                arrival_city,
-                departure_time,
-                price,
-                capacity,
-            },
-        );
+        let campaigns = borrow_global<Campaigns>(addr);
+        let campaign = vector::borrow(&campaigns.campaigns, 0);
+        (campaign.goal_amount, campaign.current_amount, campaign.active)
     }
 
-    public entry fun book_flight(
-        passenger: &signer,
-        flight_id: u64,
-        seats: u64,
-    ) acquires FlightEvents, Flight {
-        let passenger_addr = signer::address_of(passenger);
-        let flight = borrow_global_mut<Flight>(@travel_booking);
-        
-        assert!(flight.id == flight_id, EINVALID_FLIGHT_ID);
-        assert!(flight.booked_seats + seats <= flight.capacity, EINSUFFICIENT_CAPACITY);
+    /// Contribute to a campaign
+    public entry fun contribute(account: &signer, campaign_owner: address, amount: u64) acquires Campaigns {
+        // Transfer the AptosCoins from the contributor's account to the campaign owner's account
+        coin::transfer<AptosCoin>(account, campaign_owner, amount);
 
-        flight.booked_seats = flight.booked_seats + seats;
+        // Ensure the campaign exists and is active
+        if (!exists<Campaigns>(campaign_owner)) {
+            abort 404; // Campaign does not exist
+        };
 
-        let events = borrow_global_mut<FlightEvents>(@travel_booking);
-        event::emit_event(
-            &mut events.flight_booked_events,
-            FlightBookedEvent {
-                flight_id,
-                passenger: passenger_addr,
-                seats,
-            },
-        );
+        let campaigns = borrow_global_mut<Campaigns>(campaign_owner);
+        let campaign = vector::borrow_mut(&mut campaigns.campaigns, 0); // Assuming only one campaign for simplicity
+        assert!(campaign.active, 403); // Campaign must be active to contribute
+
+        // Update the campaign's current amount
+        campaign.current_amount = campaign.current_amount + amount;
+
+        // Mark the campaign as inactive if the goal is met
+        if (campaign.current_amount >= campaign.goal_amount) {
+            campaign.active = false;
+        };
     }
-
-    public fun get_flight(flight_id: u64): Flight acquires Flight {
-        let flight = borrow_global<Flight>(@travel_booking);
-        assert!(flight.id == flight_id, EINVALID_FLIGHT_ID);
-        *flight
-    }
-} 
+}
